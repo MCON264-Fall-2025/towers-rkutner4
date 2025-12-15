@@ -1,6 +1,5 @@
 package exercises;
 
-
 import java.util.List;
 
 /**
@@ -36,11 +35,16 @@ public class TowersOfHanoi {
      * @param moves output list to record each move as a string "X -> Y"
      */
     public static void solve(int n, char from, char aux, char to, List<String> moves) {
-        // TODO: implement recursively
-        // if (n == 0) return;
-        // 1) solve(n - 1, from, to, aux, moves);
-        // 2) moves.add(from + " -> " + to);
-        // 3) solve(n - 1, aux, from, to, moves);
+        if (n == 0) return; // Base case: no disks to move
+
+        // 1) Move n-1 disks from 'from' to 'aux'
+        solve(n - 1, from, to, aux, moves);
+
+        // 2) Move the largest disk (disk n) from 'from' to 'to'
+        moves.add(from + " -> " + to);
+
+        // 3) Move n-1 disks from 'aux' to 'to'
+        solve(n - 1, aux, from, to, moves);
     }
 }
 
