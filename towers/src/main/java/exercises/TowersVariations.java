@@ -14,21 +14,29 @@ public class TowersVariations {
      * Recursive method to solve the Towers of Hanoi variation.
      *
      * @param n    number of disks
-     * @param from starting peg label (1, 2, or 3)
+     * @param from starting peg label
      * @param mid  middle peg (must be used for every move)
      * @param to   destination peg label
      */
     public static void solveVariation(int n, int from, int mid, int to) {
-        if (n == 0) return; // Base case: no disks
+        if (n == 0) {
+            return; // base case
+        }
 
-        // Move n-1 disks from 'from' to 'mid' using 'to' as helper
-        solveVariation(n - 1, from, to, mid);
+        // 1) Move n-1 disks from 'from' to 'to'
+        solveVariation(n - 1, from, mid, to);
 
-        // Move largest disk from 'from' to 'to' via mid (counts as 2 moves)
-        count += 2;
+        // 2) Move disk n from 'from' -> 'mid'
+        count++;
 
-        // Move n-1 disks from 'mid' to 'to' using 'from' as helper
-        solveVariation(n - 1, mid, from, to);
+        // 3) Move n-1 disks from 'to' back to 'from'
+        solveVariation(n - 1, to, mid, from);
+
+        // 4) Move disk n from 'mid' -> 'to'
+        count++;
+
+        // 5) Move n-1 disks from 'from' to 'to'
+        solveVariation(n - 1, from, mid, to);
     }
 
     public static void main(String[] args) {
@@ -41,7 +49,7 @@ public class TowersVariations {
                 break;
             }
 
-            count = 0; // reset count
+            count = 0;
             solveVariation(n, 1, 2, 3);
             System.out.printf("Number of moves (variation) = %d%n", count);
         }

@@ -68,8 +68,14 @@ Pros: cleaner, easier to analyze growth; Cons: cannot verify exact move sequence
 ### 1. New Rule
 _Every move must pass through the middle peg. How does this alter the recursion?_
 
-> Each move from `from → to` becomes `from → mid → to`.  
-Recursion splits the problem into two sub-problems: move `n-1` disks to `mid`, move largest disk via `mid`, move `n-1` disks from `mid` to `to`.
+> Each move of the largest disk must occur in two steps: `from → mid` and `mid → to`.  
+To move `n` disks from the starting peg to the destination peg, the algorithm:
+1. Moves `n-1` disks from `from` to `to`,
+2. Moves disk `n` from `from` to `mid`,
+3. Moves `n-1` disks from `to` back to `from`,
+4. Moves disk `n` from `mid` to `to`,
+5. Moves `n-1` disks from `from` to `to`.
+   This results in three recursive calls per level and produces the recurrence `T(n) = 3T(n−1) + 2`.
 
 ### 2. Observed Move Counts
 
@@ -83,7 +89,7 @@ Recursion splits the problem into two sub-problems: move `n-1` disks to `mid`, m
 ### 3. Analysis
 _Why does this variation grow faster than the standard version? How do additional move constraints affect complexity?_
 
-> ✎ This variation grows faster because each disk requires **two moves instead of one** for each “direct” move. The recursion depth and total moves increase roughly as `3^n - 1`.
+> ✎ This variation grows faster because each disk move requires two separate steps through the middle peg, and the recursive structure now contains three recursive subproblems instead of two. This changes the recurrence from `2ⁿ − 1` to `3ⁿ − 1`, increasing the total number of operations exponentially.
 
 ---
 
@@ -108,11 +114,11 @@ _Estimate the maximum recursion depth before StackOverflowError and discuss how 
 
 ### Iterative / Explicit-Stack Version (`TowersIterative.java`)
 
-1. How does your iterative version simulate recursion? 
+1. How does your iterative version simulate recursion?
 2. How did you track pending calls or frames?
 3. Which version (r vs iterative) is clearer? Why?
 
-> ✎ The iterative version uses an explicit stack (e.g., Stack<Frame> or Deque<Frame>) to simulate the call stack that recursion naturally uses. Each stack frame contains the current state of a “recursive call” — the number of disks to move, the source, auxiliary, and destination pegs. The algorithm repeatedly pops frames, processes moves, and pushes new frames onto the stack to represent pending recursive calls. Each frame stores (n, from, aux, to) and a flag or step counter to indicate which stage of the recursion it is in. When a frame is popped, the algorithm checks if n > 0 and, depending on the step, either counts/moves the largest disk or pushes the next sub-problem frames onto the stack. This ensures that all moves are executed in the correct order. The recursive version is usually clearer because it expresses the solution naturally in terms of the problem definition — “move n-1 disks, move largest, move n-1 disks” — without explicitly managing a stack or bookkeeping. The iterative version, while more memory-efficient in some cases, is more verbose and harder to read due to manual stack management and state tracking. 
+> ✎ The iterative version uses an explicit stack (e.g., Stack<Frame> or Deque<Frame>) to simulate the call stack that recursion naturally uses. Each stack frame contains the current state of a “recursive call” — the number of disks to move, the source, auxiliary, and destination pegs. The algorithm repeatedly pops frames, processes moves, and pushes new frames onto the stack to represent pending recursive calls. Each frame stores (n, from, aux, to) and a flag or step counter to indicate which stage of the recursion it is in. When a frame is popped, the algorithm checks if n > 0 and, depending on the step, either counts/moves the largest disk or pushes the next sub-problem frames onto the stack. This ensures that all moves are executed in the correct order. The recursive version is usually clearer because it expresses the solution naturally in terms of the problem definition — “move n-1 disks, move largest, move n-1 disks” — without explicitly managing a stack or bookkeeping. The iterative version, while more memory-efficient in some cases, is more verbose and harder to read due to manual stack management and state tracking.
 
 ---
 
@@ -134,7 +140,7 @@ _Estimate the maximum recursion depth before StackOverflowError and discuss how 
 - YouTube CS50 Recursion, GeeksForGeeks Hanoi, tower of Hanoi stimulation, chat gpt
 ---
 
- **Submission Checklist**
+**Submission Checklist**
 
 - [ ] `TowersOfHanoi.java` — implemented and tested
 - [ ] `TowersExercise21.java` — counts moves correctly
